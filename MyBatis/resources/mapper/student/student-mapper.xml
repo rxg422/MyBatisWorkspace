@@ -3,7 +3,76 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="student">
+	<!-- 
+		mapper namespace
+			- mapper 파일의 고유한 별칭
+			- 다른 mapper 파일에 동일한 값이 존재하는 경우 오류발생
+			
+		mapper 파일에서 사용한 태그
+			1. query문과 관련된 태그(필요한 데이터 바인딩시 #{필드명(VO}, KET(MAP), 변수명(기본자료형)) 또는 ${필드명, 변수값, 키값} 사용)
+				- DML
+					1) <insert id="쿼리문 식별자" parameterType="데이터 타입"></insert>
+					2) <update></update>
+					3) <delete></delete>
+				- DQL(resultType or resultMap 속성 필수, 처리한 행의 개수를 반환하여 반환타입 설정 생략가능)
+					1) <select id="식별자" parameterType="자바 클래스" resultType="조회결과를 자동매핑한 자바타입" resultMap="조회결과를 매핑할 resultMap의 id값"></select>
+			2. resultMap
+				- ResultSet으로 조회된 컬럼을 하나씩 뽑아 지정한 vo클래스의 각 필드에 직접 데이터를 매핑
+				
+				- 기본 생성자 호출 후, 각 태그에 저장된 property의 setter 메서드를 호출하여 데이터바인딩
+				<resultMap id-"식별자" type="반환타입">
+					<id column="db컬럼" property="필드명"/>
+					<collection property="핑드명" resultMap="식별자"/>
+					<association property="필드명" resultMap="식별자"/>
+				</resultMap>
+				
+				- 생성자 방식의 데이터 바인딩
+				<resultMap id="" type="">
+					<constructor>
+						<idArg />
+						<arg />
+					</constructor>
+				</resultMap>
+	 -->
 	<insert id="insertStudent" parameterType="com.kh.mybatis.student.service.model.vo.Student">
 		INSERT INTO student(no, name, tel) VALUES(SEQ_STUDENT_NO.NEXTVAL, #{name}, #{tel})
 	</insert>
+	<insert id="insertStudentMap" parameterType="HashMap">
+		INSERT INTO student(no, name, tel) VALUES(SEQ_STUDENT_NO.NEXTVAL, #{name}, #{tel})
+	</insert>
+	
+	<select id="selectStudentCount" resultType="int">
+		SELECT COUNT(*) FROM student
+	</select>
+	<!-- 
+		resultSet 자동 VO클래스 매핑
+			1. 조회한 컬럼명과 동일한 이름의 필드의 setter()를 호출하여 값 대입
+			2. 자동형변환 처리
+				- varchar2, char -> Strung
+				- number -> int / double
+				- date -> java.util.Date
+	 -->
+	<select id="selectOneStudent" parameterType="int" resultType="student">
+		SELECT no, name, tel, reg_date FROM student WHERE no = #{no}
+	</select>
+	
+	<update id="updateStudent" parameterType="student">
+		UPDATE student SET name = #{name}, tel = #{tel} WHERE no = #{no}
+	</update>
+	
+	<delete id="deleteStudent" parameterType="int">
+		DELETE FROM student WHERE no = #{no}
+	</delete>
+	
+	
+	<!-- type의 기본생성자 호출 후, id와 result태그에 적힌 property의 setter()를 호출하여 바인딩. column의 이름과 property의 이름이 동일하면 생략 가능 -->
+	<select id="selectStudentList" resultMap="studentMap">
+		SELECT * FROM student ORDER BY no DESC
+	</select>
+	<resultMap type="student" id="studentMap">
+		<id column="no" property="no"/>
+		<result column="name" property="name"/>
+		<result column="tel" property="tel"/>
+		<result column="reg_date" property="regDate"/>
+	</resultMap>
 </mapper>
