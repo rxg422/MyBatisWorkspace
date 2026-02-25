@@ -32,14 +32,14 @@ div#search-container{
 	
 	<div id="search-container">
 		<form name="empSearchFrm" action="">
-			<select name="searchType" required>
+			<select name="searchType">
 				<option value="">검색타입</option>
 				<option value="emp_id">사번</option>
 				<option value="emp_name">사원명</option>
 				<option value="email">이메일</option>
 				<option value="phone">전화번호</option>
 			</select>
-			<input type="search" name="searchKeyword" required/>	
+			<input type="search" name="searchKeyword"/>	
 			<input type="submit" value="검색" />
 		</form>
 	</div>
